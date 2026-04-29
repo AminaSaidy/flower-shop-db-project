@@ -1,0 +1,45 @@
+services:
+  nginx:
+    image: nginx:1.25-alpine
+    #черновик
+
+  api_1:
+    #черновик
+
+  api_2:
+    #черновик
+
+  bot:
+    #черновик
+
+  celery_worker:
+    #черновик
+
+  celery_beat:
+    #черновик
+
+  postgres:
+    image: postgres:16-alpine
+    #черновик
+
+  redis:
+    image: redis:7-alpine
+    #черновик
+
+  elasticsearch:
+    image: elasticsearch:8.18.0
+    #черновик
+
+  prometheus:
+    image: prom/prometheus:latest
+    #черновик
+
+  grafana:
+    image: grafana/grafana:latest
+    #черновик
+
+volumes:
+  postgres_data:
+  redis_data:
+  es_data:
+  grafana_data:
