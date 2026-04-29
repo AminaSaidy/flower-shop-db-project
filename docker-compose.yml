@@ -1,42 +1,126 @@
 services:
   nginx:
     image: nginx:1.25-alpine
-    #черновик
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      api_1: { condition: service_healthy }
+      api_2: { condition: service_healthy }
+    restart: unless-stopped
 
   api_1:
-    #черновик
+    build: .
+    env_file: .env
+    environment:
+      - INSTANCE_ID=api_1
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   api_2:
-    #черновик
+    build: .
+    env_file: .env
+    environment:
+      - INSTANCE_ID=api_2
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   bot:
-    #черновик
+    build: .
+    command: python -m app.bot.main
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+    restart: unless-stopped
 
   celery_worker:
-    #черновик
+    build: .
+    command: celery -A app.worker.celery_app worker --loglevel=info
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+    restart: unless-stopped
 
   celery_beat:
-    #черновик
+    build: .
+    command: celery -A app.worker.celery_app beat --loglevel=info
+    env_file: .env
+    depends_on:
+      - celery_worker
+    restart: unless-stopped
 
   postgres:
     image: postgres:16-alpine
-    #черновик
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    #черновик
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
 
   elasticsearch:
     image: elasticsearch:8.18.0
-    #черновик
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -qE 'green|yellow'"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+    restart: unless-stopped
 
   prometheus:
     image: prom/prometheus:latest
-    #черновик
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    restart: unless-stopped
 
   grafana:
     image: grafana/grafana:latest
-    #черновик
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
 
 volumes:
   postgres_data:
