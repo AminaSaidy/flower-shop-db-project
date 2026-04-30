@@ -28,3 +28,24 @@ else
     return 0
 end
 """
+
+
+class TokenBucketLimiter:
+    def __init__(self, redis_client, capacity: int = 5, refill_rate: float = 0.5):
+        self.redis       = redis_client
+        self.capacity    = capacity
+        self.refill_rate = refill_rate
+        self._script     = None
+
+    async def is_allowed(self, key: str) -> bool:
+        if not self._script:
+            self._script = self.redis.register_script(LUA_SCRIPT)
+        now    = time.time()
+        result = await self._script(
+            keys=[f"rate_limit:{key}"],
+            args=[self.capacity, self.refill_rate, now]
+        )
+        return result == 1
+
+
+
