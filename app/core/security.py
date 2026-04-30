@@ -22,4 +22,8 @@ def get_current_user(authorization: str = Header(None)) -> dict:
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-
+def validate_telegram_init_data(init_data: str) -> bool:
+    if not init_data:
+        return False
+    secret = hmac.new(b"WebAppData", settings.TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
+    return True
