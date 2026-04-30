@@ -48,4 +48,25 @@ class TokenBucketLimiter:
         return result == 1
 
 
+_redis_client = None
 
+
+async def get_redis():
+    global _redis_client
+    if _redis_client is None:
+        _redis_client = aioredis.from_url(settings.REDIS_URL)
+    return _redis_client
+
+
+async def rate_limit_middleware(request: Request, call_next):
+    if request.url.path == "/api/orders" and request.method == "POST":
+        redis  = await get_redis()
+        limiter = TokenBucketLimiter(redis)
+        client_ip = request.client.host
+        allowed   = await limiter.is_allowed(client_ip)
+        if not allowed:
+            raise HTTPException(
+                status_code=429,
+                detail="Too many order requests. Please wait before trying again."
+            )
+    return await call_next(request)
