@@ -32,5 +32,12 @@ async def get_products(
         for p in products
     ]}
 
-#нужно дописать эндпоинт поиска и айдипродукта
+@router.get("/search", summary="Full-text search via Elasticsearch (R5)")
+async def search_products(q: str = Query(..., description="Search query")):
+    """Поиск через Elasticsearch — быстрее и умнее чем SQL LIKE (R5)."""
+    from app.services.es_sync import search_products_es
+    results = await search_products_es(q)
+    return {"results": results}
+
+#нужно дописать эндпоинт айдипродукта
 
