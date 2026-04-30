@@ -39,5 +39,16 @@ async def search_products(q: str = Query(..., description="Search query")):
     results = await search_products_es(q)
     return {"results": results}
 
-#нужно дописать эндпоинт айдипродукта
+@router.get("/{product_id}", summary="Get single product")
+async def get_product(product_id: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(Product).where(Product.id == product_id)
+    )
+    product = result.scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
 
+    return {"id": str(product.id), "name": product.name,
+            "price": product.price, "description": product.description,
+            "color": product.color, "occasion": product.occasion,
+            "stock": product.stock_quantity, "image_url": product.image_url}
