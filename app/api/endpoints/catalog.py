@@ -52,3 +52,4 @@ async def get_product(product_id: str, db: AsyncSession = Depends(get_db)):
             "price": product.price, "description": product.description,
             "color": product.color, "occasion": product.occasion,
             "stock": product.stock_quantity, "image_url": product.image_url}
+#finish
