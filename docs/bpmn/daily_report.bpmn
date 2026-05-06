@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1fjlajh" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.13.2">
+  <bpmn:process id="Process_16g2rxp" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_0p1zti8" name="23:00 daily">
+      <bpmn:outgoing>Flow_1v7kkss</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_12yibo7" />
+    </bpmn:startEvent>
+    <bpmn:task id="Activity_1rzp1kb" name="Query delivered orders">
+      <bpmn:incoming>Flow_1v7kkss</bpmn:incoming>
+      <bpmn:outgoing>Flow_000eunx</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1v7kkss" sourceRef="StartEvent_0p1zti8" targetRef="Activity_1rzp1kb" />
+    <bpmn:task id="Activity_1bukkwd" name="Sum total revenue">
+      <bpmn:incoming>Flow_000eunx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ane4rf</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_000eunx" sourceRef="Activity_1rzp1kb" targetRef="Activity_1bukkwd" />
+    <bpmn:task id="Activity_1ws33c5" name="Log report">
+      <bpmn:incoming>Flow_0ane4rf</bpmn:incoming>
+      <bpmn:outgoing>Flow_02rs59e</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0ane4rf" sourceRef="Activity_1bukkwd" targetRef="Activity_1ws33c5" />
+    <bpmn:endEvent id="Event_0ac4d9d">
+      <bpmn:incoming>Flow_02rs59e</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_02rs59e" sourceRef="Activity_1ws33c5" targetRef="Event_0ac4d9d" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_16g2rxp">
+      <bpmndi:BPMNShape id="Event_0pbdplv_di" bpmnElement="StartEvent_0p1zti8">
+        <dc:Bounds x="156" y="92" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="147" y="135" width="54" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1rzp1kb_di" bpmnElement="Activity_1rzp1kb">
+        <dc:Bounds x="300" y="70" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1bukkwd_di" bpmnElement="Activity_1bukkwd">
+        <dc:Bounds x="500" y="70" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ws33c5_di" bpmnElement="Activity_1ws33c5">
+        <dc:Bounds x="710" y="70" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ac4d9d_di" bpmnElement="Event_0ac4d9d">
+        <dc:Bounds x="912" y="92" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1v7kkss_di" bpmnElement="Flow_1v7kkss">
+        <di:waypoint x="192" y="110" />
+        <di:waypoint x="300" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_000eunx_di" bpmnElement="Flow_000eunx">
+        <di:waypoint x="400" y="110" />
+        <di:waypoint x="500" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ane4rf_di" bpmnElement="Flow_0ane4rf">
+        <di:waypoint x="600" y="110" />
+        <di:waypoint x="710" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02rs59e_di" bpmnElement="Flow_02rs59e">
+        <di:waypoint x="810" y="110" />
+        <di:waypoint x="912" y="110" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
