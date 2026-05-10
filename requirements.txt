@@ -18,3 +18,4 @@ opentelemetry-instrumentation-fastapi==0.48b0
 opentelemetry-exporter-prometheus==0.48b0
 prometheus-client==0.21.0
 python-multipart==0.0.6
+bcrypt==4.0.1
