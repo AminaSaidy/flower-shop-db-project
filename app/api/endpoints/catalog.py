@@ -1,20 +1,30 @@
+import json
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.db.session import get_db
 from app.db.models import Product, Category
+from app.core.config import settings
+import redis.asyncio as aioredis
 
 router = APIRouter(prefix="/products", tags=["catalog"])
 
+
 @router.get("/", summary="List products with optional filters")
 async def get_products(
-    category: str  = Query(None, description="Filter by category slug"),
-    occasion: str  = Query(None, description="birthday, wedding, anniversary, any"),
-    color:    str  = Query(None, description="red, white, pink, yellow..."),
+    category: str = Query(None, description="Filter by category slug"),
+    occasion: str = Query(None, description="birthday, wedding, anniversary, any"),
+    color:    str = Query(None, description="red, white, pink, yellow..."),
     db: AsyncSession = Depends(get_db)
 ):
-    q = select(Product).where(Product.is_active == True)
+    r = aioredis.from_url(settings.REDIS_URL)
+    cache_key = f"products:{category}:{occasion}:{color}"
 
+    cached = await r.get(cache_key)
+    if cached:
+        return json.loads(cached)
+
+    q = select(Product).where(Product.is_active == True)
     if occasion:
         q = q.where(Product.occasion == occasion)
     if color:
@@ -24,20 +34,23 @@ async def get_products(
 
     result = await db.execute(q)
     products = result.scalars().all()
-
-    return {"products": [
+    response = {"products": [
         {"id": str(p.id), "name": p.name, "price": p.price,
          "color": p.color, "occasion": p.occasion,
          "stock": p.stock_quantity, "image_url": p.image_url}
         for p in products
     ]}
 
+    await r.set(cache_key, json.dumps(response), ex=60)
+    return response
+
+
 @router.get("/search", summary="Full-text search via Elasticsearch (R5)")
 async def search_products(q: str = Query(..., description="Search query")):
-    """Поиск через Elasticsearch — быстрее и умнее чем SQL LIKE (R5)."""
     from app.services.es_sync import search_products_es
     results = await search_products_es(q)
     return {"results": results}
+
 
 @router.get("/{product_id}", summary="Get single product")
 async def get_product(product_id: str, db: AsyncSession = Depends(get_db)):
