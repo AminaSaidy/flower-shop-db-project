@@ -8,6 +8,13 @@ from app.core.config import settings
 
 pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
+def get_session():
+    engine = create_async_engine(settings.DATABASE_URL)
+    Session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    return Session, engine
+
+
 async def seed():
     engine = create_async_engine(settings.DATABASE_URL)
     Session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
@@ -64,6 +71,32 @@ async def seed():
         print("✓ Seed complete")
 
     await engine.dispose()
+
+
+async def seed_performance_data():
+    import random
+    Session, engine = get_session()
+    async with Session() as db:
+        users_result = await db.execute(text("SELECT id FROM users LIMIT 1"))
+        user_id = str(users_result.scalar())
+
+        statuses = ["pending", "confirmed", "preparing", "delivering", "delivered", "cancelled"]
+
+        for i in range(10000):
+            await db.execute(text("""
+                INSERT INTO orders (id, user_id, status, delivery_address, total_price)
+                VALUES (gen_random_uuid(), :uid, :status, :addr, :price)
+            """), {
+                "uid": user_id,
+                "status": random.choice(statuses),
+                "addr": f"Test address {i}",
+                "price": round(random.uniform(20, 200), 2)
+            })
+
+        await db.commit()
+        print("✓ 10 000 orders created for benchmarking")
+    await engine.dispose()
+
 
 if __name__ == "__main__":
     asyncio.run(seed())
