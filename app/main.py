@@ -13,7 +13,7 @@ app = FastAPI(
     redoc_url="/api/redoc",
 )
 
-#для будущего фронта
+#для фронта
 app.add_middleware(CORSMiddleware,
     allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
@@ -31,3 +31,11 @@ setup_telemetry(app)
 @app.get("/health", tags=["system"])
 async def health():
     return {"status": "ok"}
+
+#При старте API синхронизируем все продукты в Elasticsearch
+@app.on_event("startup")
+async def startup_event():
+    from app.services.es_sync import sync_all_products
+    from app.db.session import async_session
+    async with async_session() as db:
+        await sync_all_products(db)
