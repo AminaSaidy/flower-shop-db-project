@@ -46,6 +46,8 @@ services:
     build: .
     command: python -m app.bot.main
     env_file: .env
+    profiles:
+      - bot
     depends_on:
       postgres: { condition: service_healthy }
       redis:    { condition: service_healthy }

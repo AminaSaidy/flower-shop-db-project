@@ -23,6 +23,7 @@ app/
   api/endpoints/      REST and WebSocket routes
   core/               config, JWT helpers, rate limiter, telemetry
   db/                 SQLAlchemy models and async session
+  static/             browser frontend served by FastAPI
   services/           Elasticsearch synchronization/search
   worker/             Celery app and scheduled tasks
 migrations/           Alembic migrations
@@ -107,6 +108,7 @@ docker compose exec api_1 python seed.py
 
 Useful local URLs:
 
+- Frontend: `http://localhost/`
 - API health check: `http://localhost/health`
 - Swagger UI: `http://localhost/api/docs`
 - ReDoc: `http://localhost/api/redoc`
@@ -142,11 +144,19 @@ Diagrams are stored in `docs/`:
 
 ## API Overview
 
+Auth:
+
+- `POST /api/auth/register` - create customer account and receive JWT
+- `POST /api/auth/login` - sign in and receive JWT
+
 Catalog:
 
 - `GET /api/products/` - list active products, optionally filtered by `category`, `occasion`, and `color`
+- `POST /api/products/` - create product, admin only
 - `GET /api/products/search?q=...` - full-text product search through Elasticsearch
 - `GET /api/products/{product_id}` - get one product
+- `PATCH /api/products/{product_id}` - update product, admin only
+- `DELETE /api/products/{product_id}` - remove product from public catalog, admin only
 
 Cart, requires `Authorization: Bearer <token>`:
 
@@ -159,7 +169,13 @@ Orders, requires `Authorization: Bearer <token>`:
 
 - `POST /api/orders/?delivery_address=...` - create order from cart
 - `GET /api/orders/` - get current user's orders
-- `PATCH /api/orders/{order_id}/status?status=...` - update order status
+- `GET /api/orders/admin` - get all orders with customer and item details, admin/manager only
+- `PATCH /api/orders/{order_id}/status?status=...` - update order status, admin/manager only
+
+Users:
+
+- `GET /api/users/` - list users, admin only
+- `PATCH /api/users/{user_id}/role` - assign `admin`, `manager`, or `customer` role, admin only
 
 Realtime order updates:
 
@@ -190,11 +206,9 @@ The seed script creates an admin user:
 - Email: `admin@flowershop.uz`
 - Password: `admin1234`
 
-The project currently contains token helper logic, but no public login/register endpoint is exposed in the API routers.
-
 ## Operational Notes
 
-- Nginx proxies `/api/`, `/ws/`, `/metrics`, and `/openapi.json` to two API containers: `api_1` and `api_2`.
+- Nginx proxies `/`, `/api/`, `/ws/`, `/metrics`, and `/openapi.json` to two API containers: `api_1` and `api_2`.
 - Order creation is rate-limited with a Redis token bucket: capacity 5 requests, refill rate 0.5 tokens per second per client IP.
 - API docs are served at `/api/docs` and `/api/redoc`.
 - `docker compose logs -f api_1 api_2` is useful for API troubleshooting.
