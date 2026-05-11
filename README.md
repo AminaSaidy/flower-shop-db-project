@@ -1,6 +1,9 @@
-﻿# Flower Shop DB Project
+# Flower Shop
 
-Backend for an online flower shop built as a Database Application and Design course project. The service exposes a FastAPI REST API, stores core data in PostgreSQL, uses Redis for carts and rate limiting, synchronizes products to Elasticsearch for search, and runs scheduled jobs with Celery.
+E-commerce platform for a flower shop with Telegram bot integration.
+Built for Database Application and Design course, INHA University 2026.
+
+The service exposes a FastAPI REST API, stores core data in PostgreSQL, uses Redis for carts and rate limiting, synchronizes products to Elasticsearch for search, and runs scheduled jobs with Celery.
 
 ## Stack
 
@@ -34,6 +37,20 @@ seed.py               Demo data loader
 - Docker and Docker Compose
 - Python 3.12, only if running parts of the app outside Docker
 
+## Quick start
+
+```bash
+git clone git@github.com:AminaSaidy/flower-shop-db-project.git
+cd flower-shop-db-project
+cp .env.example .env
+docker compose up -d --build
+docker compose exec api_1 alembic upgrade head
+docker compose exec api_1 python seed.py
+```
+
+**Deployed URL:** https://flower-uz.tech
+**API Docs:** https://flower-uz.tech/api/docs
+
 ## Production
 
 - Application domain: `https://flower-uz.tech`
@@ -51,7 +68,7 @@ cp .env.example .env
 
 Main variables:
 
-| Variable | Purpose | Example |
+| Variable | Description | Example |
 | --- | --- | --- |
 | `POSTGRES_USER` | PostgreSQL user used by the container | `flower_user` |
 | `POSTGRES_PASSWORD` | PostgreSQL password | `changeme` |
@@ -182,3 +199,30 @@ The project currently contains token helper logic, but no public login/register 
 - API docs are served at `/api/docs` and `/api/redoc`.
 - `docker compose logs -f api_1 api_2` is useful for API troubleshooting.
 - `docker compose logs -f celery_worker celery_beat` is useful for scheduled task troubleshooting.
+
+## Architecture
+
+- **API:** FastAPI x 2 replicas behind Nginx
+- **DB:** PostgreSQL 16 (primary data store)
+- **Cache:** Redis 7 (cart, sessions, rate limiter)
+- **Search:** Elasticsearch 8 (product full-text search)
+- **Queue:** Celery + Redis (batch jobs)
+- **Bot:** Telegram bot via aiogram (webhook mode)
+- **Observability:** OpenTelemetry -> Prometheus + Grafana
+
+## Team
+
+| Name | Role |
+|------|------|
+| Amina Saidakhmedova  | DevOps / Infra |
+| Amir Shayxutdinov | DevOps 2 / Auth |
+| Aleksandrina Ryazanova | QA / Orders |
+| Andrey Sedelkov | QA / Catalog |
+| Xusan Samatov | Data / Pipeline |
+
+## Changelog
+
+### v1.0.0 - 2026-05-17
+
+- Initial production release
+- All R1-R13 requirements implemented
