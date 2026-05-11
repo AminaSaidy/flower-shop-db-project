@@ -130,10 +130,8 @@ The current schema contains:
 - `products`: catalog items with price, stock, occasion, color, and image URL
 - `orders`: customer orders and delivery address
 - `order_items`: products inside each order
-- `cart_items`: relational cart table kept in the schema
+- `cart_items`: cart data is stored in Redis at runtime, cart_items table is kept in schema for reference
 - `reviews`: product reviews with rating constraints
-
-Runtime cart endpoints currently store cart data in Redis with a 7-day TTL.
 
 Diagrams are stored in `docs/`:
 
