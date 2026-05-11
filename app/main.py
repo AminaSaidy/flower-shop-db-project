@@ -6,27 +6,16 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 import os
 
-from contextlib import asynccontextmanager
-
 from app.api.endpoints import auth, catalog, orders, cart, users, ws
 from app.bot.main import router_bot
 from app.core.rate_limiter import rate_limit_middleware
 from app.core.telemetry import setup_telemetry
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    from app.services.es_sync import sync_all_products
-    from app.db.session import async_session
-    async with async_session() as db:
-        await sync_all_products(db)
-    yield
 
 app = FastAPI(
     title="Flower Shop API",
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
-    lifespan=lifespan,
 )
 
 #для фронта
@@ -51,6 +40,13 @@ setup_telemetry(app)
 async def health():
     return {"status": "ok"}
 
+@app.on_event("startup")
+async def startup_event():
+    # При старте API синхронизируем все продукты в Elasticsearch
+    from app.services.es_sync import sync_all_products
+    from app.db.session import async_session
+    async with async_session() as db:
+        await sync_all_products(db)
 
 @app.exception_handler(404)
 async def custom_404_handler(request: Request, exc: StarletteHTTPException):
