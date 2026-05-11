@@ -81,11 +81,12 @@ class Review(Base):
     __tablename__ = "reviews"
     id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id    = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"))
+    order_id   = Column(UUID(as_uuid=True), ForeignKey("orders.id", ondelete="SET NULL"), index=True)
     product_id = Column(UUID(as_uuid=True), ForeignKey("products.id", ondelete="CASCADE"), index=True)
     rating     = Column(Integer, nullable=False)
     comment    = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     __table_args__ = (
         CheckConstraint("rating >= 1 AND rating <= 5", name="ck_reviews_rating"),
-        UniqueConstraint("user_id", "product_id", name="uq_review_user_product"),
+        UniqueConstraint("user_id", "order_id", "product_id", name="uq_review_user_order_product"),
     )

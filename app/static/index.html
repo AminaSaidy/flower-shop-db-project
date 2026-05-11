@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flower Shop</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Shop navigation">
+        <div class="sidebar-head">
+          <a class="brand" href="/" aria-label="Flower Shop home">
+            <span class="brand-mark">F</span>
+            <span>
+              <strong>Flower Shop</strong>
+              <small>Tashkent delivery</small>
+            </span>
+          </a>
+
+          <div class="account-actions" aria-label="Account actions">
+            <button class="account-icon" id="authOpenBtn" type="button" aria-label="Sign in">
+              <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none">
+                <path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
+            </button>
+            <button class="account-icon hidden" id="logoutBtn" type="button" aria-label="Logout">
+              <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none">
+                <path d="M10 7V5a2 2 0 0 1 2-2h7v18h-7a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M15 12H3m0 0 4-4m-4 4 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="Shop sections">
+          <button class="nav-item active" data-view="catalog">
+            <span>Catalog</span>
+            <small>Shop products</small>
+          </button>
+          <button class="nav-item" data-view="orders">
+            <span>My orders</span>
+            <small>Status history</small>
+          </button>
+          <button class="nav-item hidden" id="adminNavBtn" data-view="admin">
+            <span>Admin</span>
+            <small>Products and roles</small>
+          </button>
+          <button class="nav-item hidden" id="clientOrdersNavBtn" data-view="clientOrders">
+            <span>Client orders</span>
+            <small>Manage statuses</small>
+          </button>
+        </nav>
+
+        <nav class="nav-list category-nav collapsed" aria-label="Catalog categories">
+          <button class="category-toggle" id="categoryToggle" type="button" aria-expanded="false" aria-controls="categoryMenu">
+            <span>Categories</span>
+            <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none">
+              <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="category-menu" id="categoryMenu">
+            <button class="category-item active" data-category="">
+              <span>All flowers</span>
+              <small>Full catalog</small>
+            </button>
+            <button class="category-item" data-category="roses">
+              <span>Roses</span>
+              <small>Classic bouquets</small>
+            </button>
+            <button class="category-item" data-category="bouquets">
+              <span>Bouquets</span>
+              <small>Ready sets</small>
+            </button>
+            <button class="category-item" data-category="seasonal">
+              <span>Seasonal</span>
+              <small>Fresh picks</small>
+            </button>
+            <button class="category-item" data-category="succulents">
+              <span>Plants</span>
+              <small>Long lasting</small>
+            </button>
+          </div>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="toolbar">
+          <div>
+            <p class="eyebrow" id="pageEyebrow">Fresh catalog</p>
+            <h1 id="pageTitle">Order flowers without calling the shop</h1>
+          </div>
+          <button class="cart-toggle" id="cartToggle" type="button" aria-label="Open cart">
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M6.5 8.5h14l-1.4 8.1a2 2 0 0 1-2 1.7H9.2a2 2 0 0 1-2-1.7L5.4 5.7H3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9.5 21h.01M17 21h.01" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+            <span id="cartCount">0</span>
+          </button>
+        </header>
+
+        <section class="view-section" id="catalogView">
+          <section class="filters" aria-label="Catalog filters">
+            <label class="search-box">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="m21 21-4.2-4.2m2.2-5.3a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              <input id="searchInput" type="search" placeholder="Search roses, tulips, lavender..." autocomplete="off" />
+            </label>
+
+            <div class="select-row">
+              <label>
+                Occasion
+                <select id="occasionFilter">
+                  <option value="">Any</option>
+                  <option value="romantic">Romantic</option>
+                  <option value="wedding">Wedding</option>
+                  <option value="birthday">Birthday</option>
+                  <option value="anniversary">Anniversary</option>
+                  <option value="any">Everyday</option>
+                </select>
+              </label>
+              <label>
+                Color
+                <select id="colorFilter">
+                  <option value="">Any</option>
+                  <option value="red">Red</option>
+                  <option value="white">White</option>
+                  <option value="pink">Pink</option>
+                  <option value="yellow">Yellow</option>
+                  <option value="green">Green</option>
+                  <option value="purple">Purple</option>
+                  <option value="orange">Orange</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <section class="status-line" id="statusLine">Loading catalog...</section>
+          <section class="product-grid" id="productGrid" aria-live="polite"></section>
+        </section>
+
+        <section class="view-section hidden" id="ordersView">
+          <div class="section-toolbar">
+            <div>
+              <p class="eyebrow">Order history</p>
+              <h2>Your recent orders</h2>
+            </div>
+            <button class="secondary-btn" id="refreshOrdersBtn" type="button">Refresh</button>
+          </div>
+          <div class="order-list" id="ordersList"></div>
+        </section>
+
+        <section class="view-section hidden" id="adminView">
+          <div class="section-toolbar">
+            <div>
+              <p class="eyebrow">Admin panel</p>
+              <h2>Products and users</h2>
+            </div>
+            <button class="secondary-btn" id="refreshAdminBtn" type="button">Refresh</button>
+          </div>
+
+          <section class="admin-products">
+            <div class="section-toolbar compact">
+              <div>
+                <p class="eyebrow">Catalog control</p>
+                <h2>Product cards</h2>
+              </div>
+            </div>
+
+            <form class="product-form" id="productForm">
+              <input id="productEditingId" type="hidden" />
+              <label>
+                Name
+                <input id="productNameInput" type="text" required placeholder="Evening Peony Mix" />
+              </label>
+              <label>
+                Price
+                <input id="productPriceInput" type="number" min="1" step="0.01" required placeholder="55" />
+              </label>
+              <label>
+                Stock
+                <input id="productStockInput" type="number" min="0" step="1" required value="10" />
+              </label>
+              <label>
+                Category
+                <select id="productCategoryInput">
+                  <option value="">No change / uncategorized</option>
+                  <option value="bouquets">Bouquets</option>
+                  <option value="roses">Roses</option>
+                  <option value="seasonal">Seasonal</option>
+                  <option value="succulents">Plants</option>
+                </select>
+              </label>
+              <label>
+                Occasion
+                <select id="productOccasionInput">
+                  <option value="any">Everyday</option>
+                  <option value="romantic">Romantic</option>
+                  <option value="wedding">Wedding</option>
+                  <option value="birthday">Birthday</option>
+                  <option value="anniversary">Anniversary</option>
+                </select>
+              </label>
+              <label>
+                Color
+                <select id="productColorInput">
+                  <option value="pink">Pink</option>
+                  <option value="red">Red</option>
+                  <option value="white">White</option>
+                  <option value="yellow">Yellow</option>
+                  <option value="green">Green</option>
+                  <option value="purple">Purple</option>
+                  <option value="orange">Orange</option>
+                </select>
+              </label>
+              <label class="wide">
+                Image URL
+                <input id="productImageInput" type="url" placeholder="https://..." />
+              </label>
+              <label class="wide">
+                Description
+                <textarea id="productDescriptionInput" placeholder="Short product description"></textarea>
+              </label>
+              <div class="form-actions">
+                <button class="primary-btn" id="productSubmitBtn" type="submit">Add product</button>
+                <button class="ghost-btn hidden" id="productCancelEditBtn" type="button">Cancel edit</button>
+              </div>
+            </form>
+
+            <div class="admin-product-grid" id="adminProductGrid"></div>
+          </section>
+
+          <section class="admin-users">
+            <div class="section-toolbar compact">
+              <div>
+                <p class="eyebrow">Access control</p>
+                <h2>Users and roles</h2>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Phone</th>
+                    <th>Created</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody id="adminUsersBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="view-section hidden" id="clientOrdersView">
+          <div class="section-toolbar">
+            <div>
+              <p class="eyebrow">Client orders</p>
+              <h2>Orders board</h2>
+            </div>
+            <button class="secondary-btn" id="refreshClientOrdersBtn" type="button">Refresh</button>
+          </div>
+          <div class="admin-stats" id="adminStats"></div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="adminOrdersBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <aside class="cart-panel" id="cartPanel" aria-label="Shopping cart">
+        <div class="cart-head">
+          <div>
+            <p class="eyebrow">Current order</p>
+            <h2>Your cart</h2>
+          </div>
+          <button class="icon-btn" id="cartClose" type="button" aria-label="Close cart">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="cart-items" id="cartItems"></div>
+
+        <form class="checkout-form" id="checkoutForm">
+          <label>
+            Delivery address
+            <textarea id="addressInput" required placeholder="Street, building, apartment, notes for courier"></textarea>
+          </label>
+          <button class="primary-btn" id="checkoutBtn" type="submit">Place order</button>
+        </form>
+
+        <div class="cart-total">
+          <span>Total</span>
+          <strong id="cartTotal">$0</strong>
+        </div>
+      </aside>
+    </div>
+
+    <div class="modal-backdrop hidden" id="authModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <form class="auth-modal" id="authForm">
+        <div class="modal-head">
+          <div>
+            <p class="eyebrow">Account</p>
+            <h2 id="modalTitle">Sign in</h2>
+          </div>
+          <button class="icon-btn" id="authClose" type="button" aria-label="Close auth dialog">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <label class="register-only hidden">
+          Full name
+          <input id="nameInput" type="text" autocomplete="name" />
+        </label>
+        <label>
+          Email
+          <input id="emailInput" type="email" required autocomplete="email" />
+        </label>
+        <label>
+          Password
+          <input id="passwordInput" type="password" required autocomplete="current-password" />
+        </label>
+        <label class="register-only hidden">
+          Phone
+          <input id="phoneInput" type="tel" autocomplete="tel" />
+        </label>
+
+        <button class="primary-btn" type="submit" id="authSubmit">Sign in</button>
+        <button class="ghost-btn" type="button" id="authModeToggle">Create account</button>
+      </form>
+    </div>
+
+    <div class="modal-backdrop hidden" id="productModal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle">
+      <article class="product-modal">
+        <div class="product-modal-media">
+          <img id="productModalImage" src="" alt="" />
+        </div>
+        <div class="product-modal-body">
+          <div class="modal-head">
+            <div>
+              <p class="eyebrow">Product details</p>
+              <h2 id="productModalTitle"></h2>
+            </div>
+            <button class="icon-btn" id="productModalClose" type="button" aria-label="Close product details">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="product-modal-meta" id="productModalMeta"></div>
+          <p class="product-modal-description" id="productModalDescription"></p>
+
+          <section class="product-modal-reviews">
+            <div class="reviews-head">
+              <div>
+                <p class="eyebrow">Reviews</p>
+                <h3 id="productModalReviewSummary">Loading reviews...</h3>
+              </div>
+              <span class="sold-count" id="productModalSoldCount"></span>
+            </div>
+            <div class="review-list" id="productModalReviewList"></div>
+          </section>
+
+          <div class="product-modal-actions">
+            <strong id="productModalPrice"></strong>
+            <button class="primary-btn" id="productModalAdd" type="button">Add to cart</button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="modal-backdrop hidden" id="reviewModal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+      <form class="review-modal" id="reviewForm">
+        <div class="modal-head">
+          <div>
+            <p class="eyebrow">Delivered order</p>
+            <h2 id="reviewModalTitle">Leave a review</h2>
+          </div>
+          <button class="icon-btn" id="reviewModalClose" type="button" aria-label="Close review dialog">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <label>
+          Rating
+          <select id="reviewRatingInput" required>
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Good</option>
+            <option value="3">3 - Okay</option>
+            <option value="2">2 - Poor</option>
+            <option value="1">1 - Bad</option>
+          </select>
+        </label>
+        <label>
+          Comment
+          <textarea id="reviewCommentInput" placeholder="Tell us about the flowers and delivery"></textarea>
+        </label>
+
+        <button class="primary-btn" type="submit">Submit review</button>
+      </form>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
