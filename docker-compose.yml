@@ -46,8 +46,6 @@ services:
     build: .
     command: python -m app.bot.main
     env_file: .env
-    profiles:
-      - bot
     depends_on:
       postgres: { condition: service_healthy }
       redis:    { condition: service_healthy }
@@ -124,8 +122,35 @@ services:
       - grafana_data:/var/lib/grafana
     restart: unless-stopped
 
+  loki:
+    image: grafana/loki:2.9.0
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki_data:/loki
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./observability/promtail.yml:/etc/promtail/config.yml:ro
+    depends_on:
+      - loki
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:2.4.0
+    command: -config.file=/etc/tempo/tempo.yml
+    volumes:
+      - ./observability/tempo.yml:/etc/tempo/tempo.yml:ro
+      - tempo_data:/tmp/tempo
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
   es_data:
   grafana_data:
+  loki_data:
+  tempo_data: 
