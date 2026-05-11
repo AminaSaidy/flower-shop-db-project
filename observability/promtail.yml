@@ -10,7 +10,7 @@ clients:
 scrape_configs:
   - job_name: flower-shop
     docker_sd_configs:
-      - host: unix:///var/lib/docker/containers
+      - host: unix:///var/run/docker.sock
         refresh_interval: 5s
     relabel_configs:
       - source_labels: [__meta_docker_container_name]
