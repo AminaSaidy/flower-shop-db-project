@@ -121,6 +121,20 @@ Stop services:
 docker compose down
 ```
 
+## Testing
+
+The project uses `pytest` and `httpx` (`TestClient`) for API testing. To run the test suite, ensure your Docker containers are running, then execute:
+
+```bash
+docker compose exec -e PYTHONPATH=/app api_1 pytest
+```
+
+The tests cover:
+- API endpoint validation and proper status codes (200, 404, 422, etc.)
+- Authentication blocks and JWT validation
+- Product catalog reading and filtering errors
+- Proper JSON formatting
+
 ## Database
 
 The current schema contains:
