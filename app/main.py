@@ -16,6 +16,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
+    lifespan=lifespan,
 )
 
 #для фронта
@@ -53,6 +54,10 @@ async def startup_event():
 async def custom_404_handler(request: Request, exc: StarletteHTTPException):
     if not request.url.path.startswith("/api/"):
         return RedirectResponse("/404.html")
+    return JSONResponse(status_code=404, content={"detail": "Not Found"})
+
+@app.api_route("/api/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"])
+async def catch_all_api(request: Request):
     return JSONResponse(status_code=404, content={"detail": "Not Found"})
 
 app.mount("/", StaticFiles(directory="app/static", html=True), name="frontend")

@@ -68,6 +68,7 @@ async def get_products(
     category: str  = Query(None, description="Filter by category slug"),
     occasion: str  = Query(None, description="birthday, wedding, anniversary, any"),
     color:    str  = Query(None, description="red, white, pink, yellow..."),
+    limit:    int  = Query(100, ge=1, le=100, description="Max products to fetch"),
     db: AsyncSession = Depends(get_db)
 ):
     r = aioredis.from_url(settings.REDIS_URL)
