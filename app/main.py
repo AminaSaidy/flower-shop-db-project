@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.api.endpoints import catalog, orders, cart, ws
+from app.bot.main import router_bot
 from app.core.rate_limiter import rate_limit_middleware
 from app.core.telemetry import setup_telemetry
 
@@ -23,7 +24,8 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=rate_limit_middleware)
 app.include_router(catalog.router, prefix="/api")
 app.include_router(orders.router,  prefix="/api")
 app.include_router(cart.router,    prefix="/api")
-app.include_router(ws.router)      
+app.include_router(ws.router)
+app.include_router(router_bot)      
 
 #R12
 setup_telemetry(app)
