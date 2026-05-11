@@ -31,17 +31,17 @@ async def main():
         for i in range(5):
             await redis.delete(cache_key)
             start = time.perf_counter()
-            await client.get("http://localhost:8000/api/products/")
+            await client.get("http://127.0.0.1:8000/api/products/")
             elapsed = (time.perf_counter() - start) * 1000
             times_db.append(elapsed)
             print(f"  Run #{i+1}: {elapsed:.2f}ms")
 
-        await client.get("http://localhost:8000/api/products/")  # warm up
+        await client.get("http://127.0.0.1:8000/api/products/")  # warm up
 
         print("\nCache hit measurements (5 runs):")
         for i in range(5):
             start = time.perf_counter()
-            await client.get("http://localhost:8000/api/products/")
+            await client.get("http://127.0.0.1:8000/api/products/")
             elapsed = (time.perf_counter() - start) * 1000
             times_cache.append(elapsed)
             print(f"  Run #{i+1}: {elapsed:.2f}ms")
