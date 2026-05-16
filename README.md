@@ -163,7 +163,7 @@ Auth:
 
 Catalog:
 
-- `GET /api/products/` - list active products, optionally filtered by `category`, `occasion`, and `color`
+- `GET /api/products/` - list active products, optionally filtered by `category`, `occasion`, `color`, and `limit` (integer 1–100, default 100)
 - `POST /api/products/` - create product, admin only
 - `GET /api/products/search?q=...` - full-text product search through Elasticsearch
 - `GET /api/products/{product_id}` - get one product
@@ -225,6 +225,10 @@ The seed script creates an admin user:
 - API docs are served at `/api/docs` and `/api/redoc`.
 - `docker compose logs -f api_1 api_2` is useful for API troubleshooting.
 - `docker compose logs -f celery_worker celery_beat` is useful for scheduled task troubleshooting.
+
+## Frontend
+
+The customer-facing UI is built with **Vue 3 + Vite** and **Pinia** for state management. The compiled output is committed to `app/static/` and served directly by FastAPI via `StaticFiles` mounted at `/`. There is no separate frontend container — Nginx proxies `/` to the API upstream, which handles both REST requests and static file delivery.
 
 ## Architecture
 
