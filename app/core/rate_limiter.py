@@ -59,7 +59,7 @@ async def get_redis():
 
 
 async def rate_limit_middleware(request: Request, call_next):
-    if request.url.path == "/api/orders" and request.method == "POST":
+    if request.url.path in ("/api/orders", "api/orders/") and request.method == "POST":
         redis  = await get_redis()
         limiter = TokenBucketLimiter(redis)
         client_ip = request.client.host
